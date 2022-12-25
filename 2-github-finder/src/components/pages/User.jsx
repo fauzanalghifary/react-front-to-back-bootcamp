@@ -5,16 +5,20 @@ import { FaCodepen, FaStore, FaUserFriends, FaUsers } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import Spinner from "../../components/layout/Spinner";
 import RepoList from "../repos/RepoList";
+import { getUserAndRepos } from "../../context/github/GithubActions";
 
 const User = () => {
-  const { getUser, user, loading, getUserRepos, repos } =
-    useContext(GithubContext);
+  const { user, loading, repos, dispatch } = useContext(GithubContext);
   const { login } = useParams();
 
   useEffect(() => {
-    getUser(login);
-    getUserRepos(login);
-  }, []);
+    dispatch({ type: "SET_LOADING" });
+    const getUserData = async () => {
+      const userData = await getUserAndRepos(login);
+      dispatch({ type: "GET_USER_AND_REPOS", payload: userData });
+    };
+    getUserData();
+  }, [dispatch, login]);
 
   const {
     name,
